@@ -110,6 +110,7 @@ def get_content(shard, query, low_price=None, top_price=None):
         url = f'https://catalog.wb.ru/catalog/{shard}/catalog?appType=1&curr=rub&dest=-1075831,-77677,-398551,12358499' \
               f'&locale=ru&page={page}&priceU={low_price * 10};{top_price * 10}' \
               f'&reg=0&regions=64,83,4,38,80,33,70,82,86,30,69,1,48,22,66,31,40&sort=popular&spp=0&{query}'
+        url = f'https://catalog.wb.ru/catalog/{shard}/catalog?appType=1&curr=rub&dest=-1075831,-77677,-398551,12358499&locale=ru&page={page}&priceU={low_price * 10};{top_price * 10}&reg=0&regions=64,83,4,38,80,33,70,82,86,30,69,1,48,22,66,31,40&sort=popular&spp=0&{query}'
         # url = "https://www.wildberries.ru/catalog/zhenshchinam/odezhda/bluzki-i-rubashki"
         # print(url)
         r = requests.get(url, headers=headers)
