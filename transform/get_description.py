@@ -12,7 +12,11 @@ from sklearn.utils import shuffle
 from bs4 import BeautifulSoup
 import re
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
+# from selenium.webdriver.chrome.options import Options
 
 import csv
 import os
@@ -134,10 +138,15 @@ import os
 
 
 def get_description(url):
-    driver = webdriver.Chrome('chromedriver.exe')
+    # driver = webdriver.Chrome('chromedriver.exe')
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get(url)
     soup = BeautifulSoup(driver.page_source, 'html.parser')
-    desc = soup.find('p', attrs={'class': 'collapsable__text'}).get_text()
+    desc = soup.find('p', attrs={'class': 'collapsable__text'})
+    print(type(desc))
+    if desc is None:
+        return ""
+    desc = desc.get_text()
     driver.close()
     driver.quit()
     return desc
@@ -156,16 +165,16 @@ df = pd.read_csv("../data/products.csv")
 # driver.close()
 df = df.rename(columns={"Ссылка":'url'})
 # df_shuffle = shuffle(df)
-df_cut = df.iloc[:20]
-descs = []
-with open("descs.txt","w",encoding='utf-8') as f:
-    for item in df_cut['url']:
-        desc = get_description(item)
-        descs.append(desc)
-        print(desc)
-        f.write(desc + "\n")
-df_cut['descriptions'] = descs
-df_cut.to_csv("cat_products_with_description")
+df_cut = df.iloc[20:30]
+# descs = []
+# with open("descs1.txt", "w", encoding='utf-8') as f:
+#     for item in df_cut['url']:
+#         desc = get_description(item)
+#         descs.append(desc)
+#         print(desc)
+#         f.write(desc + "\n")
+df_cut['descriptions'] = df_cut['url'].apply(lambda x: get_description(x))
+df_cut.to_csv("cat_products_with_description.csv")
 
 # df_shuffle_cut['descriptions'] = df_shuffle_cut['url'].apply(lambda x: get_description(x))
 # df.to_csv("products_with_description")
