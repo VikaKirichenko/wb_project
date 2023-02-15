@@ -31,8 +31,6 @@ def tokenize_lemmatize_text(text, tokenizer=WORD_PUNCT_TOKENIZER, natasha=False,
         return text
     tokens = tokenize_text(text, tokenizer)
     text = lemmatize_text(tokens, postagging)
-    # texts.append(text)
-
     return text
 
 
@@ -46,6 +44,7 @@ def tokenize_text(text, tokenizer):
 
 def lemmatize_text(tokens, postagging):
     if postagging:
+        print([(MORPH.parse(x)[0].normal_form , MORPH.parse(x)[0].tag.POS) for x in tokens[:1]])
         text_lemmatized = [MORPH.parse(x)[0].normal_form + "_" + MORPH.parse(x)[0].tag.POS for x in tokens]
         return ' '.join(text_lemmatized)
     text_lemmatized = [MORPH.parse(x)[0].normal_form for x in tokens]  # apply lemmatization to each word in a text
@@ -77,8 +76,8 @@ def remove_noise(tokens):
     new_text = words.findall(' '.join(text))
     return new_text
 
-def main(df):
-    df = df['text'].applymap(tokenize_lemmatize_text)
-    # df = df['text'].applymap(tokenize_lemmatize_text,natasha = True)
-    # df = df['text'].applymap(tokenize_lemmatize_text, tokenizer=TOK_TOK_TOKENIZER)
-    return df
+# def main(df):
+#     df = df['text'].applymap(tokenize_lemmatize_text)
+#     # df = df['text'].applymap(tokenize_lemmatize_text,natasha = True)
+#     # df = df['text'].applymap(tokenize_lemmatize_text, tokenizer=TOK_TOK_TOKENIZER)
+#     return df
