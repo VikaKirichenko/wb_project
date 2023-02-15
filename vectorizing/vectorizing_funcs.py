@@ -6,6 +6,8 @@ from gensim.test.utils import datapath
 from zipfile import ZipFile
 import gensim
 from gensim.models import word2vec
+import numpy as np
+from tqdm import tqdm
 
 
 # df = pd.read_csv("../data/products.csv")
@@ -60,15 +62,30 @@ def load_model():
     return w2v_model
 
 
+def document_vector(text, w2v_model):
+    # remove out-of-vocabulary words (выкидывает много тип развивать, развивашка, стирать, ребенок???)
+    doc = [word for word in text if word in w2v_model.wv]
+    # print(doc)
+    return np.mean(w2v_model.wv[doc], axis=0)
+
+
 # сделать 3 функции?:
 # 1) качаем модель с rusvectores, готово
 # 2) качаем модель с rusvectores + дообучаем на наших данных
 # 3) обучаем только на наших данных
 # get model from rusvectores (НКРЯ?)
 # add our words to improve model
-def get_pretrained_word2vec_vector():
+# data_pos - токенезированный, лемматизированный список текстов, подается в виде токенов!
+# data_pos = [text_pos.split(" ") for text_pos in texts_pos]
+def get_pretrained_word2vec_vector(data_pos):
     model = load_model()
-    return model
+    X = []
+    for doc in tqdm(data_pos):
+        X.append(document_vector(doc, model))
+
+    # вектор для всех текстов (один текст это вектор из 300 элементов)
+    X = np.array(X)
+    return X, model
 
 
 # data - токенезированный, лемматизированный список текстов, подается в виде токенов!
@@ -88,7 +105,7 @@ def get_retrained_word2vec_vector(data):
 
 # data - токенезированный, лемматизированный список текстов, подается в виде токенов!
 def get_trained_word2vec_vector(data, workers=4, size=300, min_count=10, window=10, sample=1e-3):
-    model_en = word2vec.Word2Vec(data, workers=workers, size=size, min_count=min_count, window=window, sample=sample)
+    model_en = word2vec.Word2Vec(data, workers=workers, min_count=min_count, window=window, sample=sample)
     return model_en
 
 

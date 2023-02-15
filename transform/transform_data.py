@@ -1,6 +1,7 @@
 # 1 - токенезация + удаление всего ненужного: пунктуация+взять от Татьяны доп символы, стоп-слова, числа.
 # 2 - лемматизация (pymorphy)
 import nltk
+import re
 import string
 from natasha import Doc, MorphVocab, Segmenter, NewsEmbedding, NewsMorphTagger
 
@@ -67,9 +68,14 @@ def tokenize_lemmatize_text_natasha(text, postagging):
 
 
 def remove_noise(tokens):
-    return [word for word in tokens if
-            (word not in string.punctuation and word not in STOPWORDS and word not in string.digits)]
-
+    text = [word for word in tokens if
+            (word not in string.punctuation and
+             word not in STOPWORDS and
+             word not in string.digits and
+             not any([char.isdigit() for char in word]))]
+    words = re.compile(r'\b\w+\b')
+    new_text = words.findall(' '.join(text))
+    return new_text
 
 def main(df):
     df = df['text'].applymap(tokenize_lemmatize_text)
